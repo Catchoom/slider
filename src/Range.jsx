@@ -305,6 +305,7 @@ class Range extends React.Component {
       trackStyle,
       handleStyle,
       tabIndex,
+      includeStartEndTracks,
     } = this.props;
 
     const offsets = bounds.map(v => this.calcOffset(v));
@@ -328,12 +329,14 @@ class Range extends React.Component {
       ref: h => this.saveHandle(i, h),
     }));
 
+    const showExtraTracks = includeStartEndTracks && bounds.length > 1;
     const tracks = bounds.slice(0, -1).map((_, index) => {
       const i = index + 1;
       const trackClassName = classNames({
         [`${prefixCls}-track`]: true,
         [`${prefixCls}-track-${i}`]: true,
       });
+      const trackStyleIndex = showExtraTracks ? index + 1 : index;
       return (
         <Track
           className={trackClassName}
@@ -341,11 +344,36 @@ class Range extends React.Component {
           included={included}
           offset={offsets[i - 1]}
           length={offsets[i] - offsets[i - 1]}
-          style={trackStyle[index]}
+          style={trackStyle[trackStyleIndex]}
           key={i}
         />
       );
     });
+    if (showExtraTracks) {
+      tracks.unshift(
+        <Track
+          className={classNames(`${prefixCls}-track`, `${prefixCls}-track-start`)}
+          vertical={vertical}
+          included={included}
+          offset={0}
+          length={offsets[0]}
+          style={trackStyle[0]}
+          key={-1}
+        />
+      );
+      const lastIndex = bounds.length - 1;
+      tracks.push(
+        <Track
+          className={classNames(`${prefixCls}-track`, `${prefixCls}-track-end`)}
+          vertical={vertical}
+          included={included}
+          offset={offsets[lastIndex]}
+          length={100 - offsets[lastIndex]}
+          style={trackStyle[trackStyle.length - 1]}
+          key={lastIndex + 1}
+        />
+      );
+    }
 
     return { tracks, handles };
   }
