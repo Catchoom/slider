@@ -45,6 +45,7 @@
     "compile": "rc-tools run compile --babel-runtime",
     "pub": "rc-tools run pub --babel-runtime",
     "lint": "rc-tools run lint",
+    "prepare": "npm run compile",
     "test": "jest",
     "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
